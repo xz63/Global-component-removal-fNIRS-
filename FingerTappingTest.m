@@ -18,9 +18,11 @@ deg=1.3  % the angle of the spatial filter is   sqrt(deg/2)*180/pi
 data2(isnan(data2))=0;
 data3=removeglobalY(data2,polhemus,deg,badCh);
 nirs_data.oxyData=squeeze(data3(:,1,:));
-nirs_data.dxyData=squeeze(data3(:,2,:));
-%-data3+data2;  %is the global 
-figure;plot(mean(meandata(:,:,1),2));
-hold on;plot(mean(nirs_data.oxyData(:,:,1),2));
+nirs_data.deoxyData=squeeze(data3(:,2,:));
+globalcomponent=data2-data3;
+figure;plot(mean(meandata(:,:,1),2),'b'); % the raw  oxyhemoglobin data average all chanel into one trace
+hold on;plot(mean(nirs_data.oxyData(:,:,1),2),'r'); % the cleaned data
+figure;plot(mean(meandata(:,:,2),2),'b'); % the raw data deoxyhemoglobin data 
+hold on;plot(mean(nirs_data.deoxyData(:,:,1),2),'r'); % the cleaned  data
 % only a few channel should show finger tap activit, but the  average of raw data show clear finger tapping activity,
 %while the clean data does not show finger tapping activity

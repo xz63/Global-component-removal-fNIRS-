@@ -27,7 +27,9 @@ classdef GlobalRemover
             thphi(:,1)=TH;
             thphi(:,2)=PHI;
             x.distance_matrix =squareform(pdist(thphi,@arclen));
-            kernel=exp(- x.distance_matrix.^2 / x.sigma);
+            a=(2*(x.sigma*pi/180)^2);
+            if abs(a-1.3)>.2; simga is 46 ;end
+            kernel=exp(- x.distance_matrix.^2 / (2*(x.sigma*pi/180)^2);
             for i=1:x.nCh
                 x.kernel(:,i)=kernel(:,i)/sum(kernel(:,i));
             end

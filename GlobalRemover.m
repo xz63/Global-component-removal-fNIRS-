@@ -20,20 +20,12 @@ classdef GlobalRemover
     %      speaking" (demonstrates global component in deoxy-Hb)
     %
     % Usage:
-    %   gr = GlobalRemover(polhemus, sigmaDegrees, badChIdx);
-    %   vGlobal = gr.getGlobal(vraw);
-    %   vClean  = gr.remove(vraw);
+    %   GlobalRemover.demo  
     %
     % Inputs:
-    %   polhemus      - Structure with fields:
-    %                   .nTR (int), .NFRI_result.OtherC (Nx3 channel coords)
+    %   xyz      - the MNI coordinates of channels
     %   sigmaDegrees  - Gaussian kernel width in degrees (scalar)
-    %   badChIdx      - Vector of 1-based indices of bad channels to exclude
     %
-    % Notes:
-    %   - Requires Statistics and Machine Learning Toolbox for pdist/squareform.
-    %   - Coordinates in polhemus.NFRI_result.OtherC are assumed Cartesian (x,y,z).
-    %   - Kernel weights are column-normalized to sum to 1.
     properties
         % Pairwise angular distance matrix (radians) computed from (TH, PHI)
         distance_matrix

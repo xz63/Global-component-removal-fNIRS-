@@ -3,6 +3,8 @@ Global component remove program is made by Dr. Zhang, Xian,  Brain function lab,
 Please site my paper: "Separation of the global and local components in functional near-infrared spectroscopy signals using principal component spatial filtering"
 and "Signal processing of functional NIRS data acquired during overt speaking" ,which indicats the exist of global component in dexoyHb signal, while thought to be ignorable
 
+This implementation is actually  spatial smoothing while the distance between two point is defined as great circle arclength around the head.  
+
 for matlab run
 
 GlobalRemover.demo

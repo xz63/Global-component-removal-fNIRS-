@@ -9,7 +9,7 @@ GlobalRemover.demo
 
 for python run
 
-python GlobalReover.py
+python global_reover.py
 
-The demo program will show that for the oxyhemoglobal signal, global component removal eliminates global all positive correlation among channels.
+The demo program will show that for the oxyhemoglobal signal, global component removal eliminates the all positive correlation among channels.
 

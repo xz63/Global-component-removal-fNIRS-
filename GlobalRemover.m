@@ -20,12 +20,17 @@ classdef GlobalRemover
     %      speaking" (demonstrates global component in deoxy-Hb)
     %
     % Usage:
-    %   GlobalRemover.demo  
+    %   gr = GlobalRemover(polhemus, sigmaDegrees, badChIdx);
+    %   vGlobal = gr.getGlobal(vraw);
+    %   vClean  = gr.remove(vraw);
     %
     % Inputs:
-    %   xyz      - the MNI coordinates of channels
+    %   xyz     (MNI coordinates Nx3 channel coords)
     %   sigmaDegrees  - Gaussian kernel width in degrees (scalar)
-    %
+    % Notes:
+    %   - Requires Statistics and Machine Learning Toolbox for pdist/squareform.
+    %   - Coordinates in polhemus.NFRI_result.OtherC are assumed Cartesian (x,y,z).
+    %   - Kernel weights are column-normalized to sum to 1.
     properties
         % Pairwise angular distance matrix (radians) computed from (TH, PHI)
         distance_matrix
@@ -42,12 +47,13 @@ classdef GlobalRemover
             load testdata
             xyz = meanxyz;
             sigma = 46;
-            size(meandata) % ndata,nch, 2=oxy and deoxy, 
+            size(meandata) % ndata,nch, ncondition or nrun, 
             %we incourage contatinate all data because global compoment
             %should be shared with all condition and all runs
             nSignal=size(meandata,3); %2 oxy and dexoy
             data0=permute(meandata,[2 1 3]); data=data0(:,:); sz=size(data);
-            badchannel=[ 1 ]; % a list of all bad channels here assuming ch1 is bad
+            badchannel=[ 1 ]; % a list of all bad channels
+            badchannel=[  ]; % a list of all bad channels there is no bad channel
             ind=1:size(data,1); ind(badchannel)=[];
             gr = GlobalRemover(xyz(ind,:), sigma);
             globalC(ind,:)=gr.getGlobal(data(ind,:));
@@ -75,13 +81,21 @@ classdef GlobalRemover
             x.nCh = size(x.xyz, 1);
             % Convert to spherical to compute great-circle style angular distances
             [TH, PHI, ~] = cart2sph(x.xyz(:,1), x.xyz(:,2), x.xyz(:,3));
-            thphi = zeros(x.nCh, 2);
-            thphi(:,1) = TH;
-            thphi(:,2) = PHI;
-
+       
+            for i=1:x.nCh
+                for j=i:x.nCh
+                    diffv(i,j,1)=TH(i)-TH(j);
+                    diffv(i,j,2)=PHI(i)-PHI(j);
+                    diffv(j,i,:)=diffv(i,j,:);
+                end
+            end
+            for i=1:2
+                temp=diffv(:,:,i);
+                temp(temp>=pi)=temp(temp>=pi)-2*pi;    temp(temp<=-pi)=temp(temp<=-pi)+2*pi;
+                diffv2(:,:,i)=temp;
+            end
             % Pairwise angular distances via custom arclen metric
-            x.distance_matrix = squareform(pdist(thphi, @arclen));
-
+            x.distance_matrix =sqrt(diffv2(:,:,1).^2+diffv2(:,:,2).^2) ;
             % Gaussian kernel in angular space (sigma in degrees)
             a = (2 * (x.sigma * pi/180)^2);
             if x.sigma<20;
@@ -105,14 +119,13 @@ classdef GlobalRemover
         function v = getGlobal(x, vraw)
             % Estimate the global component for each channel as a
             % kernel-weighted spatial average of signals across channels.
-            %raw has the shape of  (nch, (ndata of oy+ndata of deoxy))
             v = (vraw' * x.kernel)';
         end
 
         function v = remove(x, vraw)
             % Remove the estimated global component from the raw signal.
-            %raw has the shape of  (nch, (ndata of oy+ndata of deoxy))
             v = vraw - x.getGlobal(vraw);
         end
     end
 end
+

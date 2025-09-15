@@ -20,7 +20,7 @@ classdef GlobalRemover
     %      speaking" (demonstrates global component in deoxy-Hb)
     %
     % Usage:
-    %   gr = GlobalRemover(polhemus, sigmaDegrees, badChIdx);
+    %   gr = GlobalRemover(xyz, sigmaDegrees);
     %   vGlobal = gr.getGlobal(vraw);
     %   vClean  = gr.remove(vraw);
     %
